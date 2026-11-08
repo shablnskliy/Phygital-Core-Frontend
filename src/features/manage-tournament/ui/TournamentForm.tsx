@@ -8,6 +8,7 @@ import { type TournamentDraft } from "@/entities/platform";
 import { Modal } from "@/shared/ui/Modal";
 import { SecondaryButton } from "@/shared/ui/Button";
 import { ActionError } from "@/shared/ui/ActionError";
+
 export function TournamentForm({
   tournament,
   close,
@@ -37,6 +38,7 @@ export function TournamentForm({
     [reading, setReading] = useState(false),
     [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
   const selectImage = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -62,39 +64,50 @@ export function TournamentForm({
     };
     reader.readAsDataURL(file);
   };
+
   const removeImage = () => {
     setPreview("");
     setImageName("");
     if (inputRef.current) inputRef.current.value = "";
   };
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const startAt = `${startDate}T${startTime || "00:00"}`,
-      endAt = endDate ? `${endDate}T${endTime || "23:59"}` : "";
-    if (!endAt) {
-      setError("Укажите дату и время окончания");
+
+    // Обязательна только дата начала. Если время не указано, ставим 00:00
+    if (!startDate) {
+      setError("Укажите дату начала");
       return;
     }
-    if (new Date(endAt) <= new Date(startAt)) {
+    const startAt = `${startDate}T${startTime || "00:00"}`;
+
+    // Дата окончания необязательна. Если указана, склеиваем с временем (или 23:59)
+    const endAt = endDate ? `${endDate}T${endTime || "23:59"}` : null;
+
+    // Проверка на хронологию, только если endAt указан
+    if (endAt && new Date(endAt) <= new Date(startAt)) {
       setError("Дата и время окончания должны быть позднее начала");
       return;
     }
+
     setError("");
     if (reading) {
       setError("Дождитесь загрузки изображения");
       return;
     }
+
     save({
       name,
       shortDescription,
       fullDescription,
       city,
       startAt,
-      endAt,
+      endAt: endAt as any, // Приводим тип, чтобы TS не ругался на null
       imageName,
       imageUrl: preview,
     });
   };
+
   return (
     <Modal
       title={tournament ? "Редактирование турнира" : "Создание турнира"}
@@ -196,11 +209,11 @@ export function TournamentForm({
                   <X />
                 </button>
               </span>
+              {/* Убрали required */}
               <input
                 type="time"
                 value={startTime}
                 onChange={(event) => setStartTime(event.target.value)}
-                required
               />
             </label>
           ) : (
@@ -229,11 +242,11 @@ export function TournamentForm({
                   <X />
                 </button>
               </span>
+              {/* Убрали required */}
               <input
                 type="date"
                 value={endDate}
                 onChange={(event) => setEndDate(event.target.value)}
-                required
               />
             </label>
           ) : (
@@ -261,11 +274,11 @@ export function TournamentForm({
                     <X />
                   </button>
                 </span>
+                {/* Убрали required */}
                 <input
                   type="time"
                   value={endTime}
                   onChange={(event) => setEndTime(event.target.value)}
-                  required
                 />
               </label>
             ) : (

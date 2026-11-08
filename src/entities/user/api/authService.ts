@@ -87,13 +87,59 @@ export const authService = {
     throw new Error("Используйте панель администратора");
   },
   async updateProfile(userId: string, patch: ProfilePatch): Promise<AuthUser> {
-    throw new Error("Not implemented");
+    const response = await fetch(`${BASE_URL}/auth/me`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify(patch),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      try {
+        if (text) {
+          const error = JSON.parse(text);
+          throw new Error(error.message || "Ошибка сохранения профиля");
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      throw new Error(`Ошибка сервера (${response.status})`);
+    }
+
+    return response.json();
   },
   async changePassword(
     userId: string,
     currentPassword: string,
     nextPassword: string,
   ): Promise<void> {
-    throw new Error("Not implemented");
+    const response = await fetch(`${BASE_URL}/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({
+        currentPassword: currentPassword,
+        newPassword: nextPassword,
+      }),
+    });
+
+    if (!response.ok) {
+      // Безопасное чтение ошибки (как мы делали для логина)
+      const text = await response.text();
+      try {
+        if (text) {
+          const error = JSON.parse(text);
+          throw new Error(error.message || "Ошибка смены пароля");
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      throw new Error(`Ошибка сервера (${response.status})`);
+    }
   },
 };

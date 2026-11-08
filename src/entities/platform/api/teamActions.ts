@@ -21,12 +21,11 @@ export function createTeamActions(
   const BASE_URL = "http://localhost:8080/api/v1";
 
   return {
-    // 1. СОЗДАНИЕ КОМАНДЫ АДМИНОМ (ИДЕТ В БАЗУ)
+    // 1. СОЗДАНИЕ КОМАНДЫ АДМИНОМ
     createTeam: async (draft) => {
       if (!draft.name.trim()) throw new Error("Введите название команды");
       if (!draft.playerIds.length) throw new Error("Добавьте хотя бы одного игрока");
 
-      // Формируем участников безопасно
       const members = draft.playerIds.map((id) => {
         const user = state.users.find((item) => item.id === id);
         if (!user) throw new Error("Один из выбранных игроков не найден");
@@ -66,7 +65,7 @@ export function createTeamActions(
       );
     },
 
-    // 2. СОЗДАНИЕ КОМАНДЫ ИГРОКОМ (ИДЕТ В БАЗУ)
+    // 2. СОЗДАНИЕ КОМАНДЫ ИГРОКОМ
     createCaptainTeam: async (name) => {
       if (!signedInUser) throw new Error("Войдите в аккаунт, чтобы создать команду");
       if (signedInUser.role === "ADMIN")
@@ -148,7 +147,7 @@ export function createTeamActions(
       }));
     },
 
-    // 4. УДАЛЕНИЕ
+    // 4. УДАЛЕНИЕ КОМАНДЫ
     deleteTeam: async (id) => {
       const response = await fetch(`${BASE_URL}/teams/${id}`, {
         method: "DELETE",
@@ -178,7 +177,74 @@ export function createTeamActions(
       }));
     },
 
-    // --- ЛОКАЛЬНЫЕ МЕТОДЫ (пока без БД) ---
+    // 5. ВЫХОД ИЗ КОМАНДЫ (ИГРОК)
+    leaveTeam: async (teamId) => {
+      if (!signedInUser) throw new Error("Войдите в аккаунт");
+
+      const response = await fetch(`${BASE_URL}/teams/${teamId}/members/${signedInUser.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+
+      if (!response.ok) throw new Error("Ошибка выхода из команды");
+
+      await mutate((previous) => {
+        const team = previous.teams.find((item) => item.id === teamId);
+        if (!team) throw new Error("Команда не найдена");
+
+        return withLog(
+          {
+            ...previous,
+            teams: previous.teams.map((item) =>
+              item.id === teamId
+                ? {
+                    ...item,
+                    members: item.members.filter((player) => player.id !== signedInUser.id),
+                    updatedAt: new Date().toISOString(),
+                  }
+                : item,
+            ),
+          },
+          fullName(signedInUser),
+          "Выход",
+          "Команда",
+          teamId,
+          `${fullName(signedInUser)} покинул команду`,
+        );
+      });
+
+      window.location.reload();
+    },
+
+    // 6. УДАЛЕНИЕ УЧАСТНИКА АДМИНОМ (ИДЕТ В БАЗУ)
+    removeTeamMember: async (teamId, userId) => {
+      const member = state.teams
+        .find((team) => team.id === teamId)
+        ?.members.find((item) => item.id === userId);
+      if (!member) throw new Error("Участник не найден");
+
+      const response = await fetch(`${BASE_URL}/teams/${teamId}/members/${userId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+
+      if (!response.ok) throw new Error("Ошибка удаления участника");
+
+      return commitTeam(teamId, "Изменение", `Удалён участник ${member.name}`, (previous) => ({
+        ...previous,
+        teams: previous.teams.map((team) =>
+          team.id === teamId
+            ? {
+                ...team,
+                updatedAt: new Date().toISOString(),
+                members: team.members.filter((item) => item.id !== userId),
+              }
+            : team,
+        ),
+      }));
+    },
+
+    // 7. ДОБАВЛЕНИЕ УЧАСТНИКА (ЛОКАЛЬНО)
     addTeamMember: (teamId, userId) => {
       const user = state.users.find((item) => item.id === userId),
         team = state.teams.find((item) => item.id === teamId);
@@ -203,25 +269,7 @@ export function createTeamActions(
       );
     },
 
-    removeTeamMember: (teamId, userId) => {
-      const member = state.teams
-        .find((team) => team.id === teamId)
-        ?.members.find((item) => item.id === userId);
-      if (!member) return Promise.reject(new Error("Участник не найден"));
-      return commitTeam(teamId, "Изменение", `Удалён участник ${member.name}`, (previous) => ({
-        ...previous,
-        teams: previous.teams.map((team) =>
-          team.id === teamId
-            ? {
-                ...team,
-                updatedAt: new Date().toISOString(),
-                members: team.members.filter((item) => item.id !== userId),
-              }
-            : team,
-        ),
-      }));
-    },
-
+    // 8. НАЗНАЧЕНИЕ КАПИТАНА (ЛОКАЛЬНО)
     assignCaptain: (teamId, userId) => {
       const member = state.teams
         .find((team) => team.id === teamId)
@@ -239,33 +287,6 @@ export function createTeamActions(
             : team,
         ),
       }));
-    },
-
-    leaveTeam: async (teamId) => {
-      if (!signedInUser) throw new Error("Войдите в аккаунт");
-      await mutate((previous) => {
-        const team = previous.teams.find((item) => item.id === teamId);
-        if (!team) throw new Error("Команда не найдена");
-        return withLog(
-          {
-            ...previous,
-            teams: previous.teams.map((item) =>
-              item.id === teamId
-                ? {
-                    ...item,
-                    members: item.members.filter((player) => player.id !== signedInUser.id),
-                    updatedAt: new Date().toISOString(),
-                  }
-                : item,
-            ),
-          },
-          fullName(signedInUser),
-          "Выход",
-          "Команда",
-          teamId,
-          `${fullName(signedInUser)} покинул команду`,
-        );
-      });
     },
   };
 }

@@ -17,7 +17,7 @@ export function createTournamentActions(
   const BASE_URL = "http://localhost:8080/api/v1";
 
   return {
-    // ПОДАЧА ЗАЯВКИ (ИДЕТ В БАЗУ)
+    // ПОДАЧА ЗАЯВКИ
     submitTournamentApplication: async (teamId, tournamentId, additionalInfo) => {
       if (!signedInUser) throw new Error("Требуется авторизация");
       const team = state.teams.find((item) => item.id === teamId),
@@ -45,7 +45,6 @@ export function createTournamentActions(
           tournamentId,
           captainName: fullName(signedInUser),
           additionalInfo: additionalInfo.trim(),
-          // status: "NEW" - УБРАЛИ! Сервер сам поставит.
         }),
       });
 
@@ -67,18 +66,19 @@ export function createTournamentActions(
       );
     },
 
-    // СОЗДАНИЕ ТУРНИРА
+    // СОЗДАНИЕ ТУРНИРА (Обязательна только дата начала)
     createTournament: async (draft) => {
       if (
         !draft.name.trim() ||
         !draft.shortDescription.trim() ||
         !draft.city.trim() ||
-        !draft.startAt
+        !draft.startAt // <-- Обязательна только дата начала
       )
         throw new Error("Заполните обязательные поля");
       if (draft.shortDescription.length > 500)
         throw new Error("Краткое описание не должно превышать 500 символов");
 
+      // Проверяем окончание только если оно указано
       if (draft.endAt && new Date(draft.endAt) <= new Date(draft.startAt))
         throw new Error("Окончание должно быть позднее начала");
 
@@ -92,9 +92,14 @@ export function createTournamentActions(
           name: draft.name.trim(),
           shortDescription: draft.shortDescription.trim(),
           city: draft.city.trim(),
-          startAt: draft.startAt,
-          endAt: draft.endAt || null,
-          registrationEndsAt: null,
+          // Если startAt пришел как "YYYY-MM-DD", добавляем время "00:00:00"
+          startAt: draft.startAt.includes("T") ? draft.startAt : `${draft.startAt}T00:00:00`,
+          endAt: draft.endAt
+            ? draft.endAt.includes("T")
+              ? draft.endAt
+              : `${draft.endAt}T23:59:59`
+            : null,
+          registrationEndsAt: null, // Всегда пусто
           description: draft.fullDescription?.trim() || draft.shortDescription.trim(),
           discipline: "",
           format: "",
@@ -127,7 +132,12 @@ export function createTournamentActions(
       if (!existing) throw new Error("Турнир не найден");
       const next = { ...existing, ...patch };
 
-      if (!next.name.trim() || !next.shortDescription.trim() || !next.city.trim() || !next.startAt)
+      if (
+        !next.name.trim() ||
+        !next.shortDescription.trim() ||
+        !next.city.trim() ||
+        !next.startAt // <-- Обязательна только дата начала
+      )
         throw new Error("Заполните обязательные поля");
 
       if (next.endAt && new Date(next.endAt) <= new Date(next.startAt))
@@ -143,9 +153,13 @@ export function createTournamentActions(
           name: next.name.trim(),
           shortDescription: next.shortDescription.trim(),
           city: next.city.trim(),
-          startAt: next.startAt,
-          endAt: next.endAt || null,
-          registrationEndsAt: next.registrationEndsAt || null,
+          startAt: next.startAt.includes("T") ? next.startAt : `${next.startAt}T00:00:00`,
+          endAt: next.endAt
+            ? next.endAt.includes("T")
+              ? next.endAt
+              : `${next.endAt}T23:59:59`
+            : null,
+          registrationEndsAt: null,
           description: next.description,
           discipline: next.discipline,
           format: next.format,

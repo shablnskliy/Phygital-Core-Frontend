@@ -2,7 +2,7 @@ import { type AdminLog } from "@/entities/admin-log/@x/feedback";
 import { type User } from "@/entities/user/@x/feedback";
 import { FEEDBACK_TOPICS, type Feedback, type FeedbackDraft, type FeedbackStatus } from "./model";
 
-const API_URL = "http://localhost:8080/api/v1/v1";
+const API_URL = "http://localhost:8080/api/v1";
 
 function requireAdmin(actor: User | null) {
   if (actor?.role !== "ADMIN")
@@ -96,22 +96,5 @@ export const feedbackService = {
     });
 
     if (!response.ok) throw new Error("Ошибка обновления статуса");
-
-    // 2. Пишем лог в базу
-    await fetch(`${API_URL}/admin-logs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify({
-        date: new Date().toISOString(),
-        admin: `${admin.firstName} ${admin.lastName}`,
-        action: "Изменение",
-        entityType: "Обращение",
-        entityId: id,
-        details: `Статус обращения изменён на ${status}`,
-      }),
-    });
   },
 };

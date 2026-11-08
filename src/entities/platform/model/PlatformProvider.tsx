@@ -33,6 +33,8 @@ export function PlatformProvider({
       let backendFeedback = null;
       let backendTournaments = null;
       let backendApplications = null;
+      let backendInvitations = null; // <-- ДОБАВИЛИ
+      let backendNotifications = null; // <-- ДОБАВИЛИ
 
       if (token) {
         try {
@@ -46,7 +48,7 @@ export function PlatformProvider({
           });
           if (resLogs.ok) backendLogs = await resLogs.json();
 
-          // ВАЖНО: Теперь пользователи загружаются с /admin/users
+          // Пользователи (только для админов, поэтому может быть 403, это нормально)
           const resUsers = await fetch("http://localhost:8080/api/v1/admin/users", {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -66,6 +68,18 @@ export function PlatformProvider({
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resApps.ok) backendApplications = await resApps.json();
+
+          // Приглашения
+          const resInvitations = await fetch("http://localhost:8080/api/v1/invitations", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (resInvitations.ok) backendInvitations = await resInvitations.json();
+
+          // Уведомления
+          const resNotifications = await fetch("http://localhost:8080/api/v1/notifications", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (resNotifications.ok) backendNotifications = await resNotifications.json();
         } catch (error) {
           console.error("Ошибка загрузки с сервера:", error);
         }
@@ -82,6 +96,8 @@ export function PlatformProvider({
             feedback: backendFeedback !== null ? backendFeedback : [],
             tournaments: backendTournaments !== null ? backendTournaments : [],
             tournamentApplications: backendApplications !== null ? backendApplications : [],
+            invitations: backendInvitations !== null ? backendInvitations : [], // <-- ДОБАВИЛИ
+            notifications: backendNotifications !== null ? backendNotifications : [], // <-- ДОБАВИЛИ
           });
           setStorageError("");
         }
