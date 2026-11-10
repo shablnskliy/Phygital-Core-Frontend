@@ -2,7 +2,7 @@ import { type AdminLog } from "@/entities/admin-log/@x/feedback";
 import { type User } from "@/entities/user/@x/feedback";
 import { FEEDBACK_TOPICS, type Feedback, type FeedbackDraft, type FeedbackStatus } from "./model";
 
-const API_URL = "http://localhost:8080/api/v1";
+const API_URL = "http://194.61.9.235:8080/api/v1";
 
 function requireAdmin(actor: User | null) {
   if (actor?.role !== "ADMIN")

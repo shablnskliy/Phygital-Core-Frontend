@@ -7,7 +7,7 @@ export function createUserActions(
   const { state, signedInUser, requireAdmin, commitAdmin, fullName } = context;
 
   const getToken = () => localStorage.getItem("jwt_token");
-  const BASE_URL = "http://localhost:8080/api/v1/admin/users";
+  const BASE_URL = "http://194.61.9.235:8080/api/v1/admin/users";
 
   return {
     createUser: async (payload) => {

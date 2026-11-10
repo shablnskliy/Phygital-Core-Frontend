@@ -33,50 +33,48 @@ export function PlatformProvider({
       let backendFeedback = null;
       let backendTournaments = null;
       let backendApplications = null;
-      let backendInvitations = null; // <-- ДОБАВИЛИ
-      let backendNotifications = null; // <-- ДОБАВИЛИ
+      let backendInvitations = null;
+      let backendNotifications = null;
 
       if (token) {
         try {
-          const resTeams = await fetch("http://localhost:8080/api/v1/teams", {
+          const resTeams = await fetch("http://194.61.9.235:8080/api/v1/teams", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resTeams.ok) backendTeams = await resTeams.json();
 
-          const resLogs = await fetch("http://localhost:8080/api/v1/admin-logs", {
+          const resLogs = await fetch("http://194.61.9.235:8080/api/v1/admin-logs", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resLogs.ok) backendLogs = await resLogs.json();
 
-          // Пользователи (только для админов, поэтому может быть 403, это нормально)
-          const resUsers = await fetch("http://localhost:8080/api/v1/admin/users", {
+          // Загрузка пользователей
+          const resUsers = await fetch("http://194.61.9.235:8080/api/v1/admin/users", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resUsers.ok) backendUsers = await resUsers.json();
 
-          const resFeedback = await fetch("http://localhost:8080/api/v1/feedback", {
+          const resFeedback = await fetch("http://194.61.9.235:8080/api/v1/feedback", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resFeedback.ok) backendFeedback = await resFeedback.json();
 
-          const resTournaments = await fetch("http://localhost:8080/api/v1/tournaments", {
+          const resTournaments = await fetch("http://194.61.9.235:8080/api/v1/tournaments", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resTournaments.ok) backendTournaments = await resTournaments.json();
 
-          const resApps = await fetch("http://localhost:8080/api/v1/tournament-applications", {
+          const resApps = await fetch("http://194.61.9.235:8080/api/v1/tournament-applications", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resApps.ok) backendApplications = await resApps.json();
 
-          // Приглашения
-          const resInvitations = await fetch("http://localhost:8080/api/v1/invitations", {
+          const resInvitations = await fetch("http://194.61.9.235:8080/api/v1/invitations", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resInvitations.ok) backendInvitations = await resInvitations.json();
 
-          // Уведомления
-          const resNotifications = await fetch("http://localhost:8080/api/v1/notifications", {
+          const resNotifications = await fetch("http://194.61.9.235:8080/api/v1/notifications", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resNotifications.ok) backendNotifications = await resNotifications.json();
@@ -92,12 +90,12 @@ export function PlatformProvider({
             ...saved,
             teams: backendTeams !== null ? backendTeams : [],
             logs: backendLogs !== null ? backendLogs : [],
-            users: backendUsers !== null ? backendUsers : [],
+            users: backendUsers !== null ? backendUsers : [], // <-- ВОТ ЗДЕСЬ
             feedback: backendFeedback !== null ? backendFeedback : [],
             tournaments: backendTournaments !== null ? backendTournaments : [],
             tournamentApplications: backendApplications !== null ? backendApplications : [],
-            invitations: backendInvitations !== null ? backendInvitations : [], // <-- ДОБАВИЛИ
-            notifications: backendNotifications !== null ? backendNotifications : [], // <-- ДОБАВИЛИ
+            invitations: backendInvitations !== null ? backendInvitations : [],
+            notifications: backendNotifications !== null ? backendNotifications : [],
           });
           setStorageError("");
         }

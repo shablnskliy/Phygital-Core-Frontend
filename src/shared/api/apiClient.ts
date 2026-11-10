@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/v1";
+const BASE_URL = "http://194.61.9.235:8080/api/v1";
 
 export const apiClient = {
   async get(endpoint: string) {

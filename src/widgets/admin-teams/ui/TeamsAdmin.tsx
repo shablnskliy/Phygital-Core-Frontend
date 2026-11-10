@@ -17,6 +17,7 @@ import { Confirm } from "@/shared/ui/ConfirmDialog";
 import { AdminFilters } from "@/features/filter-admin-data";
 import { RenameTeam } from "@/features/manage-team";
 import { AddMemberModal } from "@/features/manage-team";
+
 export function TeamsAdmin() {
   const store = usePlatformStore(),
     { busy, error, run } = useAction();
@@ -124,7 +125,7 @@ export function TeamsAdmin() {
       {addMember && selected && (
         <AddMemberModal
           team={store.state.teams.find((team) => team.id === selected.id) ?? selected}
-          users={store.state.users}
+          users={store.state.users} // <-- ВОТ ОТСЮДА БЕРУТСЯ ЮЗЕРЫ
           close={() => setAddMember(false)}
           save={(userId) =>
             void run(

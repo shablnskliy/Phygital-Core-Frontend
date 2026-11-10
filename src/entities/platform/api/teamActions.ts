@@ -18,7 +18,7 @@ export function createTeamActions(
   const { state, signedInUser, mutate, withLog, commitAdmin, commitTeam, fullName } = context;
 
   const getToken = () => localStorage.getItem("jwt_token");
-  const BASE_URL = "http://localhost:8080/api/v1";
+  const BASE_URL = "`http://194.61.9.235:8080/api/v1";
 
   return {
     // 1. СОЗДАНИЕ КОМАНДЫ АДМИНОМ
@@ -245,10 +245,21 @@ export function createTeamActions(
     },
 
     // 7. ДОБАВЛЕНИЕ УЧАСТНИКА (ЛОКАЛЬНО)
-    addTeamMember: (teamId, userId) => {
-      const user = state.users.find((item) => item.id === userId),
-        team = state.teams.find((item) => item.id === teamId);
-      if (!user || !team) return Promise.reject(new Error("Пользователь или команда не найдены"));
+    addTeamMember: async (teamId, userId) => {
+      const user = state.users.find((item) => item.id === userId);
+      if (!user) throw new Error("Пользователь не найден");
+
+      const response = await fetch(`${BASE_URL}/teams/${teamId}/members`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) throw new Error("Ошибка добавления участника");
+
       return commitAdmin(
         "Изменение",
         "Команда",
