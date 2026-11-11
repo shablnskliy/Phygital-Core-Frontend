@@ -18,7 +18,7 @@ export function createTeamActions(
   const { state, signedInUser, mutate, withLog, commitAdmin, commitTeam, fullName } = context;
 
   const getToken = () => localStorage.getItem("jwt_token");
-  const BASE_URL = "`https://phygitalcore.ru/api/v1";
+  const BASE_URL = "https://phygitalcore.ru/api/v1"; // <-- Единый адрес
 
   return {
     // 1. СОЗДАНИЕ КОМАНДЫ АДМИНОМ
@@ -177,7 +177,7 @@ export function createTeamActions(
       }));
     },
 
-    // 5. ВЫХОД ИЗ КОМАНДЫ (ИГРОК)
+    // 5. ВЫХОД ИЗ КОМАНДЫ
     leaveTeam: async (teamId) => {
       if (!signedInUser) throw new Error("Войдите в аккаунт");
 
@@ -216,7 +216,7 @@ export function createTeamActions(
       window.location.reload();
     },
 
-    // 6. УДАЛЕНИЕ УЧАСТНИКА АДМИНОМ (ИДЕТ В БАЗУ)
+    // 6. УДАЛЕНИЕ УЧАСТНИКА
     removeTeamMember: async (teamId, userId) => {
       const member = state.teams
         .find((team) => team.id === teamId)
@@ -244,7 +244,7 @@ export function createTeamActions(
       }));
     },
 
-    // 7. ДОБАВЛЕНИЕ УЧАСТНИКА (ЛОКАЛЬНО)
+    // 7. ДОБАВЛЕНИЕ УЧАСТНИКА
     addTeamMember: async (teamId, userId) => {
       const user = state.users.find((item) => item.id === userId);
       if (!user) throw new Error("Пользователь не найден");
@@ -280,7 +280,7 @@ export function createTeamActions(
       );
     },
 
-    // 8. НАЗНАЧЕНИЕ КАПИТАНА (ЛОКАЛЬНО)
+    // 8. НАЗНАЧЕНИЕ КАПИТАНА
     assignCaptain: (teamId, userId) => {
       const member = state.teams
         .find((team) => team.id === teamId)
