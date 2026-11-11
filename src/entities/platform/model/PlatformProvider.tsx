@@ -38,43 +38,43 @@ export function PlatformProvider({
 
       if (token) {
         try {
-          const resTeams = await fetch("http://194.61.9.235:8080/api/v1/teams", {
+          const resTeams = await fetch("https://phygitalcore.ru/api/v1/teams", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resTeams.ok) backendTeams = await resTeams.json();
 
-          const resLogs = await fetch("http://194.61.9.235:8080/api/v1/admin-logs", {
+          const resLogs = await fetch("https://phygitalcore.ru/api/v1/admin-logs", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resLogs.ok) backendLogs = await resLogs.json();
 
           // Загрузка пользователей
-          const resUsers = await fetch("http://194.61.9.235:8080/api/v1/admin/users", {
+          const resUsers = await fetch("https://phygitalcore.ru/api/v1/admin/users", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resUsers.ok) backendUsers = await resUsers.json();
 
-          const resFeedback = await fetch("http://194.61.9.235:8080/api/v1/feedback", {
+          const resFeedback = await fetch("https://phygitalcore.ru/api/v1/feedback", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resFeedback.ok) backendFeedback = await resFeedback.json();
 
-          const resTournaments = await fetch("http://194.61.9.235:8080/api/v1/tournaments", {
+          const resTournaments = await fetch("https://phygitalcore.ru/api/v1/tournaments", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resTournaments.ok) backendTournaments = await resTournaments.json();
 
-          const resApps = await fetch("http://194.61.9.235:8080/api/v1/tournament-applications", {
+          const resApps = await fetch("https://phygitalcore.ru/api/v1/tournament-applications", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resApps.ok) backendApplications = await resApps.json();
 
-          const resInvitations = await fetch("http://194.61.9.235:8080/api/v1/invitations", {
+          const resInvitations = await fetch("https://phygitalcore.ru/api/v1/invitations", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resInvitations.ok) backendInvitations = await resInvitations.json();
 
-          const resNotifications = await fetch("http://194.61.9.235:8080/api/v1/notifications", {
+          const resNotifications = await fetch("https://phygitalcore.ru/api/v1/notifications", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (resNotifications.ok) backendNotifications = await resNotifications.json();

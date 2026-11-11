@@ -1,6 +1,6 @@
 import type { AuthUser, RegisterPayload, ProfilePatch } from "../model/auth-types";
 
-const BASE_URL = "http://194.61.9.235:8080/api/v1"; // Обновили путь на v1
+const BASE_URL = "https://phygitalcore.ru/api/v1"; // Обновили путь на v1
 
 const getToken = () => localStorage.getItem("jwt_token");
 const setToken = (token: string) => localStorage.setItem("jwt_token", token);

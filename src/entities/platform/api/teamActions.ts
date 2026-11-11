@@ -18,7 +18,7 @@ export function createTeamActions(
   const { state, signedInUser, mutate, withLog, commitAdmin, commitTeam, fullName } = context;
 
   const getToken = () => localStorage.getItem("jwt_token");
-  const BASE_URL = "`http://194.61.9.235:8080/api/v1";
+  const BASE_URL = "`https://phygitalcore.ru/api/v1";
 
   return {
     // 1. СОЗДАНИЕ КОМАНДЫ АДМИНОМ
