@@ -48,7 +48,6 @@ export function PlatformProvider({
           });
           if (resLogs.ok) backendLogs = await resLogs.json();
 
-          // Загрузка пользователей
           const resUsers = await fetch("https://phygitalcore.ru/api/v1/admin/users", {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -83,28 +82,20 @@ export function PlatformProvider({
         }
       }
 
-      try {
-        const saved = await platformService.getState(initialState);
-        if (active) {
-          setState({
-            ...saved,
-            teams: backendTeams !== null ? backendTeams : [],
-            logs: backendLogs !== null ? backendLogs : [],
-            users: backendUsers !== null ? backendUsers : [], // <-- ВОТ ЗДЕСЬ
-            feedback: backendFeedback !== null ? backendFeedback : [],
-            tournaments: backendTournaments !== null ? backendTournaments : [],
-            tournamentApplications: backendApplications !== null ? backendApplications : [],
-            invitations: backendInvitations !== null ? backendInvitations : [],
-            notifications: backendNotifications !== null ? backendNotifications : [],
-          });
-          setStorageError("");
-        }
-      } catch (err) {
-        if (active) {
-          setStorageError(
-            "Не удалось загрузить локальные данные. Проверьте доступ к хранилищу и перезагрузите страницу.",
-          );
-        }
+      if (active) {
+        // Устанавливаем ТОЛЬКО серверные данные (или пустые массивы, если ничего не пришло)
+        setState((prev) => ({
+          ...prev,
+          teams: backendTeams || [],
+          logs: backendLogs || [],
+          users: backendUsers || [],
+          feedback: backendFeedback || [],
+          tournaments: backendTournaments || [],
+          tournamentApplications: backendApplications || [],
+          invitations: backendInvitations || [],
+          notifications: backendNotifications || [],
+        }));
+        setStorageError("");
       }
     };
 
