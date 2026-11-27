@@ -1,0 +1,59 @@
+.demo-workspace {
+  width: min(1320px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 70px;
+}
+.demo-banner {
+  padding: clamp(20px, 3vw, 30px);
+  border-radius: 16px;
+  margin-bottom: 28px;
+}
+.demo-banner h1 {
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+.demo-banner > p {
+  color: #dec9ed;
+  line-height: 1.7;
+}
+.demo-banner nav,
+.demo-page-toolbar > div {
+  display: flex;
+  gap: 14px 22px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.demo-banner nav {
+  margin-top: 16px;
+}
+.demo-banner a,
+.demo-page-toolbar a {
+  color: #e8b6ff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.demo-page-toolbar {
+  width: min(var(--container, 1240px), calc(100% - 48px));
+  margin: 0 auto 12px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px 22px;
+  flex-wrap: wrap;
+}
+.demo-page-toolbar p {
+  margin: 0;
+  color: #d6bde7;
+  line-height: 1.6;
+}
+.demo-unavailable {
+  min-height: 45vh;
+}
+@media (max-width: 600px) {
+  .demo-page-toolbar {
+    width: calc(100% - 28px);
+  }
+}

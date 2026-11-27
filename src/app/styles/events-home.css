@@ -1,0 +1,52 @@
+/* Alternate the event rows on desktop; keep heading-first reading order on smaller screens. */
+@media (min-width: 1001px) {
+  .nearest.nearest-partners {
+    grid-template-columns: 1.45fr 0.55fr;
+  }
+  .nearest-partners > .nearest-heading {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .nearest-partners > .nearest-heading + * {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+/* Share the CTA geometry for Phygital tournaments and partner events. */
+.nearest-card .nearest-event-actions {
+  display: flex;
+}
+.nearest-card .nearest-event-actions > .pc-button {
+  min-height: 48px;
+  width: min(100%, 200px);
+  justify-content: center;
+  padding: 12px 20px;
+  font-size: 1rem;
+  line-height: 1.4;
+  white-space: normal;
+}
+.footer-organizers {
+  margin-top: 14px;
+}
+.footer-organizers > h3 {
+  margin: 0 0 7px;
+  font-size: 1rem;
+}
+.footer-organizers > a {
+  display: inline-block;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transition:
+    color 0.22s ease,
+    text-shadow 0.22s ease;
+}
+.footer-organizers > a:hover {
+  color: #fff;
+  text-shadow: 0 0 10px #d889ff55;
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-organizers > a {
+    transition: none;
+  }
+}
